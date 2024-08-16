@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        center {
+            margin-top: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        h2 {
+            margin: 10px 0;
+        }
+        label {
+            margin-right: 10px;
+        }
+        select, input[type="number"], button {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 80%;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+        }
+        table, th, td {
+            border-collapse: collapse;
+            padding: 10px;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        td {
+            text-align: center;
+        }
+        thead {
+            background-color: #007bff;
+            color: white;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tbody tr:hover {
+            background-color: #d1ecf1;
+        }
+    </style>
+</head>
+<body>
+    <center>
+        <h1>Billing System</h1>
+        
+        <label for="productSelect">Product:</label>
+        <select id="productSelect" onchange="updatePrice()">
+            <option value="" data-price="0">Select a product</option>
+            <option value="Apple" data-price="10.00">Apple</option>
+            <option value="Banana" data-price="20.00">Banana</option>
+            <option value="Carrot" data-price="30.00">Carrot</option>
+            <option value="Dragon Fruit" data-price="40.00">Dragon Fruit</option>
+            <option value="Grapes" data-price="50.00">Grapes</option>
+            <option value="Mango" data-price="60.00">Mango</option>
+            <option value="Kiwi" data-price="70.00">Kiwi</option>
+            <option value="Watermelon" data-price="80.00">Watermelon</option>
+            <option value="Chickoo" data-price="90.00">Chickoo</option>
+            <option value="Pineapple" data-price="100.00">Pineapple</option>
+        </select>
+
+        <label for="pp1">Price:</label>
+        <input type="number" id="pp1" step="0.01" readonly>
+        
+        <label for="qa1">Quantity:</label>
+        <input type="number" id="qa1">
+        
+        <br><br>
+        <button onclick="addProduct()">Add Product</button>
+        
+        <h2>Total: <span id="ttl">0.00</span></h2>
+        <h2>Net Amount to Pay: <span id="netAmount">0.00</span></h2>
+        <br>
+        <table id="productTable">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </center>
+    <script>
+        let products = [];
+        let netAmount = 0;
+
+        function updatePrice() {
+            let select = document.getElementById('productSelect');
+            let price = select.options[select.selectedIndex].getAttribute('data-price');
+            document.getElementById('pp1').value = price;
+        }
+
+        function addProduct() {
+            let select = document.getElementById('productSelect');
+            let name = select.value;
+            let price = parseFloat(document.getElementById('pp1').value);
+            let quantity = parseInt(document.getElementById('qa1').value, 10);
+
+            if (name && !isNaN(price) && !isNaN(quantity) && quantity > 0) {
+                let total = price * quantity;
+                products.push({ name, price, quantity, total });
+                updateTable();
+                updateTotal();
+                updateNetAmount();
+                clearInputs();
+            } else {
+                alert('Please enter valid product details.');
+            }
+        }
+
+        function updateTable() {
+            let tableBody = document.getElementById('productTable').getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = '';
+
+            products.forEach(product => {
+                let row = tableBody.insertRow();
+                row.insertCell(0).textContent = product.name;
+                row.insertCell(1).textContent = product.price.toFixed(2);
+                row.insertCell(2).textContent = product.quantity;
+                row.insertCell(3).textContent = product.total.toFixed(2);
+            });
+        }
+
+        function updateTotal() {
+            let total = products.reduce((sum, product) => sum + product.total, 0);
+            document.getElementById('ttl').textContent = total.toFixed(2);
+        }
+
+        function updateNetAmount() {
+            netAmount = products.reduce((sum, product) => sum + product.total, 0);
+            document.getElementById('netAmount').textContent = netAmount.toFixed(2);
+        }
+
+        function clearInputs() {
+            document.getElementById('productSelect').value = '';
+            document.getElementById('pp1').value = '';
+            document.getElementById('qa1').value = '';
+        }
+    </script>
+</body>
+</html>
